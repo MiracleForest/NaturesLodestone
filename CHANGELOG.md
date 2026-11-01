@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- The repository moved to [MiracleForest/NaturesLodestone](https://github.com/MiracleForest/NaturesLodestone); links point there now. The lip package path stays `github.com/LiteLDev/NaturesLodestone`.
+- The repository moved to [MiracleForest/NaturesLodestone](https://github.com/MiracleForest/NaturesLodestone); links point there now.
+- The lip package is now `github.com/MiracleForest/NaturesLodestone` (was `github.com/LiteLDev/NaturesLodestone`); installing by the new path needs lip 0.35.0 or later. With lip 0.36.0 or later, `lip update` moves an existing install to the new path. With older lip, run `lip uninstall github.com/LiteLDev/NaturesLodestone` (`#client` on a client), then `lip install github.com/MiracleForest/NaturesLodestone` (`#client` on a client). Either way the config in `plugins/NaturesLodestone/config/` (server) or `mods/NaturesLodestone/config/` (client) is kept. Older versions stay installable at their old path.
 
 ## [0.1.0] - 2026-10-29
 

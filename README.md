@@ -44,11 +44,11 @@ With `compassDurability` set, every successful search (outside creative) wears t
 
 You need Minecraft Bedrock Edition **1.26.51** for Windows (x64) with LeviLamina **26.51.x** (on a client, installed through [LeviLauncher](https://github.com/LiteLDev/LeviLauncher)).
 
-With [lip](https://github.com/LiteLDev/lip):
+With [lip](https://github.com/LiteLDev/lip) 0.35.0 or later:
 
 ```sh
-lip install github.com/LiteLDev/NaturesLodestone           # dedicated server
-lip install github.com/LiteLDev/NaturesLodestone#client    # client
+lip install github.com/MiracleForest/NaturesLodestone           # dedicated server
+lip install github.com/MiracleForest/NaturesLodestone#client    # client
 ```
 
 Or download the zip from the [latest release](https://github.com/MiracleForest/NaturesLodestone/releases/latest) and extract it next to `LeviLamina/`:
