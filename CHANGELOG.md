@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-01
+
 ### Changed
 
 - The repository moved to [MiracleForest/NaturesLodestone](https://github.com/MiracleForest/NaturesLodestone); links point there now.
@@ -31,5 +33,6 @@ First release: Nature's Compass 3.3.1 for Bedrock 1.26.51 (LeviLamina 26.51), on
 - The `naturescompass.json` and `naturescompass_client.json` configuration files with every Nature's Compass setting.
 - The behaviour spec of the port in `docs/SPEC.md`, and usage, configuration and the differences from Nature's Compass in the README.
 
-[Unreleased]: https://github.com/MiracleForest/NaturesLodestone/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/MiracleForest/NaturesLodestone/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/MiracleForest/NaturesLodestone/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/MiracleForest/NaturesLodestone/releases/tag/v0.1.0
