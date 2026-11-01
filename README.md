@@ -1,7 +1,7 @@
 # NaturesLodestone
 
-[![Build](https://github.com/LiteLDev/NaturesLodestone/actions/workflows/build.yml/badge.svg)](https://github.com/LiteLDev/NaturesLodestone/actions/workflows/build.yml)
-[![License](https://img.shields.io/github/license/LiteLDev/NaturesLodestone)](COPYING.LESSER)
+[![Build](https://github.com/MiracleForest/NaturesLodestone/actions/workflows/build.yml/badge.svg)](https://github.com/MiracleForest/NaturesLodestone/actions/workflows/build.yml)
+[![License](https://img.shields.io/github/license/MiracleForest/NaturesLodestone)](COPYING.LESSER)
 
 Find any biome with a compass. NaturesLodestone brings Chaosyr's Java mod [Nature's Compass](https://modrinth.com/mod/natures-compass) to Bedrock, for dedicated servers and single-player worlds.
 
@@ -51,7 +51,7 @@ lip install github.com/LiteLDev/NaturesLodestone           # dedicated server
 lip install github.com/LiteLDev/NaturesLodestone#client    # client
 ```
 
-Or download the zip from the [latest release](https://github.com/LiteLDev/NaturesLodestone/releases/latest) and extract it next to `LeviLamina/`:
+Or download the zip from the [latest release](https://github.com/MiracleForest/NaturesLodestone/releases/latest) and extract it next to `LeviLamina/`:
 
 | Where | Zip | Folder |
 | --- | --- | --- |

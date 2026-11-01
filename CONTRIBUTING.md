@@ -4,7 +4,7 @@ Thanks for helping! Bug reports, ideas and pull requests are all welcome.
 
 ## Reporting bugs and requesting features
 
-Use the [issue templates](https://github.com/LiteLDev/NaturesLodestone/issues/new/choose). For bugs, include:
+Use the [issue templates](https://github.com/MiracleForest/NaturesLodestone/issues/new/choose). For bugs, include:
 
 - the NaturesLodestone version;
 - the LeviLamina version;
@@ -49,7 +49,7 @@ One code base builds both the dedicated-server mod and the client mod (`--target
 
 - Unit tests (`src/core`): `xmake build -y nl-tests; xmake run nl-tests`.
 - In-game selftests: `/naturescompass selftest ["glob"]` (operator or server console).
-- End-to-end: [tools/e2e](tools/e2e/README.md) runs the real server and client, headless through [LeviHeadlessInput](https://github.com/LiteLDev/LeviHeadlessInput). A `showcase` client scenario re-shoots the screenshots and videos in `docs/showcase/` (listed in `showcase.json` for the LeviMC Mods gallery); encode its PNGs and frames with ffmpeg (webp for images, mp4 + animated webp for clips).
+- End-to-end: [tools/e2e](tools/e2e/README.md) runs the real server and client, headless through [LeviHeadlessInput](https://github.com/LiteLDev/BeDD). A `showcase` client scenario re-shoots the screenshots and videos in `docs/showcase/` (listed in `showcase.json` for the LeviMC Mods gallery); encode its PNGs and frames with ffmpeg (webp for images, mp4 + animated webp for clips).
 
 ### How it works
 
