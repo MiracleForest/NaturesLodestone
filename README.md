@@ -1,5 +1,7 @@
 # NaturesLodestone
 
+<img src="docs/logo.png" alt="" width="128" align="right">
+
 [![Build](https://github.com/MiracleForest/NaturesLodestone/actions/workflows/build.yml/badge.svg)](https://github.com/MiracleForest/NaturesLodestone/actions/workflows/build.yml)
 [![License](https://img.shields.io/github/license/MiracleForest/NaturesLodestone)](COPYING.LESSER)
 
