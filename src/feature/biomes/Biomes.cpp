@@ -31,6 +31,21 @@ namespace nl::feature::biomes {
 
 namespace {
 
+// The Bedrock tags of a biome. 26.60 no longer exports BiomeRegistry::biomeGetTags, so ask the
+// registry about each tag it knows instead (biomeHasTag by name is exported on both lines).
+std::vector<std::string> biomeTags(BiomeRegistry const& registry, Biome const& biome) {
+#if NL_LL_VERSION >= 2660
+    std::vector<std::string> tags;
+    for (auto const& tag : registry.mTagRegistry->mTags) {
+        if (registry.biomeHasTag(biome, HashedString(tag))) tags.push_back(tag);
+    }
+    return tags;
+#else
+    auto const tags = registry.biomeGetTags(biome);
+    return {tags.begin(), tags.end()};
+#endif
+}
+
 std::vector<BiomeInfo> gCatalog;
 bool                   gBuilt = false;
 
@@ -73,8 +88,7 @@ void build() {
             ++blacklisted;
             continue;
         }
-        auto                     tagList = registry.biomeGetTags(*biome);
-        std::vector<std::string> bedrockTags(tagList.begin(), tagList.end());
+        auto const               bedrockTags = biomeTags(registry, *biome);
         BiomeInfo                info;
         info.id          = id;
         info.dimensions  = core::dimensionsFromBedrockTags(bedrockTags);

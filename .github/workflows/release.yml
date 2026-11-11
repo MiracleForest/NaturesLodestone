@@ -14,11 +14,19 @@ jobs:
       fail-fast: true
       matrix:
         target_type: [server, client]
+        # One build per supported LeviLamina line; the lip variant has the same name.
+        variant: ["26_60", "26_51"]
+        include:
+          - variant: "26_60"
+            levilamina: 26.60.6
+            line: "26.60"
+          - variant: "26_51"
+            levilamina: 26.51.7
+            line: "26.51"
+    name: build (${{ matrix.target_type }}, LeviLamina ${{ matrix.levilamina }})
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0 # the mod version comes from the latest tag
 
       - uses: xmake-io/github-action-setup-xmake@v1
 
@@ -26,9 +34,9 @@ jobs:
         with:
           path: |
             ~/AppData/Local/.xmake
-          key: xmake-${{ matrix.target_type }}-${{ hashFiles('xmake.lua', 'xmake-requires.lock') }}
+          key: xmake-${{ matrix.target_type }}-${{ matrix.variant }}-${{ hashFiles('xmake.lua', 'locks/*.lock') }}
           restore-keys: |
-            xmake-${{ matrix.target_type }}-
+            xmake-${{ matrix.target_type }}-${{ matrix.variant }}-
 
       # See build.yml: the action's release lookup fails intermittently.
       - name: Setup LLVM
@@ -50,7 +58,8 @@ jobs:
 
       - name: Build
         shell: pwsh
-        run: pwsh tools/build.ps1 -Target ${{ matrix.target_type }}
+        # Copies locks/<variant>.lock over xmake-requires.lock to pin the packages of the line.
+        run: pwsh tools/build.ps1 -Target ${{ matrix.target_type }} -LeviLamina ${{ matrix.levilamina }}
 
       - name: Unit tests
         if: matrix.target_type == 'server'
@@ -58,26 +67,34 @@ jobs:
           xmake build -y nl-tests
           xmake run nl-tests
 
-      - name: Check version
+      - name: Check versions
         shell: pwsh
         run: |
           $expected = "${{ github.ref_name }}".TrimStart('v')
           $actual = (Get-Content bin/${{ matrix.target_type }}/NaturesLodestone/manifest.json | ConvertFrom-Json).version
           if ($actual -ne $expected) { throw "manifest version $actual does not match tag $expected" }
-          $tooth = (Get-Content tooth.json | ConvertFrom-Json).version
-          if ($tooth -ne $expected) { throw "tooth.json version $tooth does not match tag $expected" }
+          $declared = (Select-String -Path lip.toml -Pattern '^version = "(.+)"$' | Select-Object -First 1).Matches[0].Groups[1].Value
+          if ($declared -ne $expected) { throw "lip.toml version $declared does not match tag $expected" }
 
       - name: Package
         shell: pwsh
         run: |
           $dir = "bin/${{ matrix.target_type }}/NaturesLodestone"
           Copy-Item COPYING, COPYING.LESSER, README.md -Destination $dir
-          Compress-Archive -Path $dir -DestinationPath natureslodestone-${{ matrix.target_type }}-windows-x64.zip
+          # lip's mcmod asset wants manifest.json at the root of the ZIP, with '/' separators.
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          [System.IO.Compression.ZipFile]::CreateFromDirectory(
+            (Resolve-Path $dir).Path,
+            (Join-Path (Get-Location) "natureslodestone-${{ matrix.target_type }}-win-x64-ll${{ matrix.line }}.zip"),
+            [System.IO.Compression.CompressionLevel]::Optimal,
+            $false
+          )
 
       - uses: actions/upload-artifact@v7
         with:
-          name: natureslodestone-${{ matrix.target_type }}-windows-x64
-          path: natureslodestone-${{ matrix.target_type }}-windows-x64.zip
+          name: zip-${{ matrix.target_type }}-${{ matrix.variant }}
+          path: natureslodestone-${{ matrix.target_type }}-win-x64-ll${{ matrix.line }}.zip
+          if-no-files-found: error
 
   release:
     needs: build
@@ -87,6 +104,7 @@ jobs:
 
       - uses: actions/download-artifact@v8
         with:
+          pattern: zip-*
           path: dist
           merge-multiple: true
 
@@ -104,5 +122,11 @@ jobs:
 
       - uses: softprops/action-gh-release@v3
         with:
-          files: dist/*.zip
+          files: |
+            dist/natureslodestone-server-win-x64-ll26.60.zip
+            dist/natureslodestone-client-win-x64-ll26.60.zip
+            dist/natureslodestone-server-win-x64-ll26.51.zip
+            dist/natureslodestone-client-win-x64-ll26.51.zip
           body_path: RELEASE_NOTES.md
+          fail_on_unmatched_files: true
+          prerelease: ${{ contains(github.ref_name, '-') }}

@@ -57,9 +57,11 @@ param(
     # Game instances this run may use (headless only); the first free one is taken. Default:
     # $env:LEVI_E2E_SLOTS ("1,2,3") or 1. Slots 2.. are clones (versions\<base>-hi<N>) made on first
     # use, so several runs can play at once.
-    [int[]]$Slot
+    [int[]]$Slot,
+    [ValidatePattern('^\d+\.\d+\.\d+$')][string]$LeviLamina   # LeviLamina version to run on (default: $env:NL_E2E_LEVILAMINA or 26.51.7)
 )
 $ErrorActionPreference = 'Stop'
+if ($LeviLamina) { $env:NL_E2E_LEVILAMINA = $LeviLamina }   # read by lib.ps1, Invoke-ModBuild and the remote host's server/run.ps1
 . "$PSScriptRoot/lib.ps1"
 
 if (-not $Foreground) {

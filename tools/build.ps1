@@ -3,14 +3,20 @@
 #   pwsh tools/build.ps1                    # both platforms, release
 #   pwsh tools/build.ps1 -Target server     # one platform
 #   pwsh tools/build.ps1 -Tests             # also build and run the unit tests (nl-tests)
+#   pwsh tools/build.ps1 -LeviLamina 26.51.7  # another supported LeviLamina line (default: the newest)
+#
+# A build targets one LeviLamina line. locks/<line>.lock (26_60, 26_51, ...) pins the packages of
+# that line and is copied over the generated xmake-requires.lock before configuring.
 #
 # Each platform has its own build dir (build/<target>); outputs land in
 #   bin/<target>/NaturesLodestone/  (dll, pdb, manifest.json, lang/, behavior_packs/, resource_packs/)
-# Copy that folder to `plugins/` (BDS) or `mods/` (LeviLauncher client).
+# Copy that folder to `mods/` (BDS on LeviLamina 26.60, or the LeviLauncher client) or, on a
+# LeviLamina 26.51 server, to `plugins/`.
 param(
     [ValidateSet('server', 'client', 'all')][string]$Target = 'all',
     [ValidateSet('release', 'debug')][string]$Mode = 'release',
-    [switch]$Tests
+    [switch]$Tests,
+    [ValidatePattern('^\d+\.\d+\.\d+$')][string]$LeviLamina = '26.60.6'
 )
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path "$PSScriptRoot/..").Path
@@ -43,10 +49,15 @@ try {
     # checkout when this one lives under .claude/worktrees/: name the project dir explicitly.
     $xp = @('-P', $root)
 
+    $line = ($LeviLamina -split '\.')[0..1] -join '_'
+    $lock = Join-Path $root "locks/$line.lock"
+    if (-not (Test-Path $lock)) { throw "LeviLamina $LeviLamina is not a supported line (no locks/$line.lock)" }
+    Copy-Item $lock (Join-Path $root 'xmake-requires.lock') -Force
+
     $targets = if ($Target -eq 'all') { @('server', 'client') } else { @($Target) }
     foreach ($t in $targets) {
-        Write-Host "==> configuring $t ($Mode)"
-        xmake f @xp -a x64 -m $Mode -p windows --target_type=$t -o (Join-Path $root "build/$t") @vsArgs -y
+        Write-Host "==> configuring $t ($Mode, LeviLamina $LeviLamina)"
+        xmake f @xp -a x64 -m $Mode -p windows --target_type=$t --levilamina=$LeviLamina -o (Join-Path $root "build/$t") @vsArgs -y
         if ($LASTEXITCODE) { throw "xmake config failed for $t" }
         Write-Host "==> building $t"
         xmake build @xp -y NaturesLodestone

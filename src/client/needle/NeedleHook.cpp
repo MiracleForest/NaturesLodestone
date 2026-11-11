@@ -41,6 +41,9 @@
 #include "mc/world/item/ResolvedItemIconInfo.h"
 #include "mc/world/item/components/ComponentItem.h"
 #include "mc/world/level/BlockPos.h"
+#include "mc/world/level/BlockSource.h"
+#include "mc/world/level/ILevel.h"
+#include "mc/world/level/dimension/VanillaDimensions.h"
 #include "mc/world/level/Tick.h"
 
 #include "client/Client.h"
@@ -99,11 +102,18 @@ int frameFor(Mob* holder, bool asItemEntity, ItemStack const* stack) {
                 view.hasHolder = false; // no world to point in: spin like a compass without holder
                 view.seed      = 0;
             } else {
+#if NL_LL_VERSION >= 2660
+                // CompassSpriteCalculator's helpers are no longer exported in 26.60: the world
+                // spawn, and whether the holder is in the Overworld, the only dimension it is in.
+                auto spawn         = region->getILevel().getSharedSpawnPos();
+                view.sameDimension = holder->getDimensionId() == VanillaDimensions::Overworld();
+#else
                 auto spawn         = CompassSpriteCalculator::pointTowardsSpawnPoint(region, holder);
+                view.sameDimension = CompassSpriteCalculator::isInOverworldDimension(region, holder);
+#endif
                 view.targetX       = spawn.x;
                 view.targetY       = spawn.y;
                 view.targetZ       = spawn.z;
-                view.sameDimension = CompassSpriteCalculator::isInOverworldDimension(region, holder);
             }
         }
     }
@@ -217,7 +227,17 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     if (!isNeedleItem(*this)) return origin(item, newAnimationFrame, inInventoryPane);
     patchItem(this);
+#if NL_LL_VERSION >= 2660
+    // The (name, frame, type) constructor is no longer exported in 26.60: take the plain icon the
+    // game resolves for the item and point it at the needle frame.
+    auto info        = origin(item, newAnimationFrame, inInventoryPane);
+    info.mIconName   = std::string{iconName()};
+    info.mIconFrame  = iconIndexFor(newAnimationFrame);
+    info.mIconType   = ItemIconInfoType::Icon;
+    return info;
+#else
     return ResolvedItemIconInfo(std::string{iconName()}, iconIndexFor(newAnimationFrame), ItemIconInfoType::Icon);
+#endif
 }
 
 class NeedleModule {

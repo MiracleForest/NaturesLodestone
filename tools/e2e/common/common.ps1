@@ -16,6 +16,17 @@ function Get-E2EHome {
 
 function Write-Step([string]$msg) { Write-Host "[e2e] $msg" }
 
+# The LeviLamina version the harnesses run on: $env:NL_E2E_LEVILAMINA (run.ps1 -LeviLamina sets
+# it), default 26.51.7. It picks the line the mod is built for (run.ps1 -Build), the LeviLamina the
+# server harness installs, and the client game instance (1.<major>.<minor>.01 unless
+# $env:NL_E2E_CLIENT_VERSION names another one). The default stays on 26.51 because that is the
+# line the e2e machine's game instance runs; tools/build.ps1 itself defaults to the newest line.
+function Get-E2ELeviLamina {
+    $v = if ($env:NL_E2E_LEVILAMINA) { $env:NL_E2E_LEVILAMINA } else { '26.51.7' }
+    if ($v -notmatch '^\d+\.\d+\.\d+$') { throw "NL_E2E_LEVILAMINA must be a LeviLamina version like 26.60.6, not '$v'" }
+    return $v
+}
+
 # ---------------------------------------------------------------------------------------
 # File locks. The lock is an exclusively opened file (FileShare.None), so the OS releases it
 # when the holding process dies: there is no stale-lock state to clean up. The holder writes
@@ -219,8 +230,9 @@ function Save-SelfTestReport([string]$Path) {
 function Invoke-ModBuild([ValidateSet('server', 'client')] [string]$Target) {
     $build = Join-Path $script:RepoRoot 'tools/build.ps1'
     if (-not (Test-Path $build)) { throw "tools/build.ps1 not found; build the mod manually" }
-    Write-Step "building ($Target)"
-    & pwsh -NoProfile -File $build -Target $Target
+    $ll = Get-E2ELeviLamina
+    Write-Step "building ($Target, LeviLamina $ll)"
+    & pwsh -NoProfile -File $build -Target $Target -LeviLamina $ll
     if ($LASTEXITCODE -ne 0) { throw "build failed (exit $LASTEXITCODE)" }
 }
 

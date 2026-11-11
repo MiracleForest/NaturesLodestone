@@ -12,6 +12,7 @@
 #include "ll/api/event/ListenerBase.h"
 #include "ll/api/event/render/UIRenderEvent.h"
 #include "ll/api/memory/Hook.h"
+#include "ll/api/memory/Memory.h"
 
 #include "mc/client/game/ClientInstance.h"
 #include "mc/client/gui/CaretMeasureData.h"
@@ -26,6 +27,9 @@
 #include "mc/client/renderer/screen/MinecraftUIRenderContext.h"
 #include "mc/deps/core/math/Color.h"
 #include "mc/deps/input/RectangleArea.h"
+#include "mc/network/IPacketHandlerDispatcher.h"
+#include "mc/network/MinecraftPacketIds.h"
+#include "mc/network/MinecraftPackets.h"
 #include "mc/network/packet/SetTitlePacket.h"
 
 #include "client/Client.h"
@@ -67,7 +71,12 @@ void drawOverlay(ll::event::AfterUIRenderEvent& ev) {
 
     auto& ctx    = ev.uiRenderContext();
     auto  handle = client->getFontHandle();
-    auto& font   = handle.getFont();
+#if NL_LL_VERSION >= 2660
+    // FontHandle::getFont() is gone from 26.60; take the font the handle carries.
+    auto& font = *handle.mDefaultFont;
+#else
+    auto& font = handle.getFont();
+#endif
     float width  = client->getGuiData()->mScreenSizeData->clientUIScreenSize->x;
     bool  right  = feature::compass::overlayOnRight();
     int   offset = feature::compass::overlayLineOffset();
@@ -94,6 +103,55 @@ void drawOverlay(ll::event::AfterUIRenderEvent& ev) {
 
 } // namespace
 
+/// Whether a title packet is one of the server's marked fallback titles.
+bool isFallbackTitle(SetTitlePacket const& packet) {
+    return packet.mType == SetTitlePacketPayload::TitleType::Title && core::isFallback(*packet.mTitleText);
+}
+
+void logDroppedTitle() {
+    static bool logged = false;
+    if (!logged) {
+        logged = true;
+        log().info("HUD fallback title dropped: the native overlay draws the HUD");
+    }
+}
+
+#if NL_LL_VERSION >= 2660
+/// The function SetTitlePacket's dispatcher hands every SetTitlePacket to the network handler with
+/// (`IPacketHandlerDispatcher::handle` of `PacketHandlerDispatcherInstance<SetTitlePacket>`). It is
+/// not exported, so it is read from the dispatcher's vtable: every packet carries its dispatcher.
+uintptr_t setTitleDispatch() {
+    auto packet = MinecraftPackets::createPacket(MinecraftPacketIds::SetTitle);
+    auto index  = ll::memory::getVtableIndex(&IPacketHandlerDispatcher::handle);
+    if (!packet || !packet->mHandler || !index) {
+        log().error("HUD: the SetTitlePacket dispatcher was not found; fallback titles are not dropped");
+        return 0;
+    }
+    auto vtable = *reinterpret_cast<void* const* const*>(packet->mHandler);
+    return reinterpret_cast<uintptr_t>(vtable[*index]);
+}
+
+/// Drops the server's marked fallback titles: this client draws the block natively.
+/// ClientNetworkHandler's SetTitlePacket handler is no longer exported in 26.60, so drop them in
+/// the packet's dispatcher, which is what calls that handler (in local worlds too).
+LL_TYPE_INSTANCE_HOOK(
+    DropFallbackTitleHook,
+    ll::memory::HookPriority::Normal,
+    IPacketHandlerDispatcher,
+    setTitleDispatch(),
+    void,
+    NetworkIdentifier const& source,
+    NetEventCallback&        callback,
+    std::shared_ptr<Packet>& packet
+) {
+    if (packet && packet->getId() == MinecraftPacketIds::SetTitle
+        && isFallbackTitle(static_cast<SetTitlePacket const&>(*packet))) {
+        logDroppedTitle();
+        return;
+    }
+    origin(source, callback, packet);
+}
+#else
 /// Drops the server's marked fallback titles: this client draws the block natively.
 LL_TYPE_INSTANCE_HOOK(
     DropFallbackTitleHook,
@@ -104,32 +162,38 @@ LL_TYPE_INSTANCE_HOOK(
     NetworkIdentifier const& source,
     SetTitlePacket const&    packet
 ) {
-    if (packet.mType == SetTitlePacketPayload::TitleType::Title && core::isFallback(*packet.mTitleText)) {
-        static bool logged = false;
-        if (!logged) {
-            logged = true;
-            log().info("HUD fallback title dropped: the native overlay draws the HUD");
-        }
+    if (isFallbackTitle(packet)) {
+        logDroppedTitle();
         return;
     }
     origin(source, packet);
 }
+#endif
 
 class HudOverlayModule {
 public:
     void install() {
-        DropFallbackTitleHook::hook();
+#if NL_LL_VERSION >= 2660
+        // Without the dispatcher's address (setTitleDispatch() logged why) there is nothing to
+        // hook: the overlay still draws, only the fallback titles are not dropped.
+        mTitleHooked = setTitleDispatch() != 0;
+#else
+        mTitleHooked = true;
+#endif
+        if (mTitleHooked) DropFallbackTitleHook::hook();
         mListener = ll::event::EventBus::getInstance().emplaceListener<ll::event::AfterUIRenderEvent>(
             [](ll::event::AfterUIRenderEvent& ev) { drawOverlay(ev); }
         );
     }
     void uninstall() {
         ll::event::EventBus::getInstance().removeListener(mListener);
-        DropFallbackTitleHook::unhook();
+        if (mTitleHooked) DropFallbackTitleHook::unhook();
+        mTitleHooked = false;
     }
 
 private:
     ll::event::ListenerPtr mListener;
+    bool                   mTitleHooked = false;
 };
 
 } // namespace nl::client::hud

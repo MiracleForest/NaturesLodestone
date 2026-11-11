@@ -24,7 +24,7 @@ One code base, two builds:
 
 | Build | Runs in | Who is served |
 | --- | --- | --- |
-| server | BDS (`plugins/NaturesLodestone`) | every player on the server: vanilla clients and clients running the client build |
+| server | BDS (`mods/NaturesLodestone`; `plugins/NaturesLodestone` on LeviLamina 26.51) | every player on the server: vanilla clients and clients running the client build |
 | client | the game client (`mods/NaturesLodestone`) | the local player in local worlds (the integrated server runs the same server-side code), and the local player's own rendering (HUD, needle) when joining a BDS that runs the server build |
 
 All gameplay (item use, searches, data, teleport, XP, durability) is server side. The client
