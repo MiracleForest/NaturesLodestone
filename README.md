@@ -60,7 +60,7 @@ lip install github.com/MiracleForest/NaturesLodestone          # the newest line
 lip install github.com/MiracleForest/NaturesLodestone#26_51    # LeviLamina 26.51
 ```
 
-Or download the zip for your side and line from the [latest release](https://github.com/MiracleForest/NaturesLodestone/releases/latest) and extract it into a `NaturesLodestone` folder next to `LeviLamina/`, so that `NaturesLodestone/manifest.json` exists:
+Or download the zip for your side and line from the [releases page](https://github.com/MiracleForest/NaturesLodestone/releases) (pick the newest release, which may be a prerelease) and extract it into a `NaturesLodestone` folder next to `LeviLamina/`, so that `NaturesLodestone/manifest.json` exists:
 
 | Where | Zip | Folder |
 | --- | --- | --- |

@@ -173,18 +173,27 @@ LL_TYPE_INSTANCE_HOOK(
 class HudOverlayModule {
 public:
     void install() {
-        DropFallbackTitleHook::hook();
+#if NL_LL_VERSION >= 2660
+        // Without the dispatcher's address (setTitleDispatch() logged why) there is nothing to
+        // hook: the overlay still draws, only the fallback titles are not dropped.
+        mTitleHooked = setTitleDispatch() != 0;
+#else
+        mTitleHooked = true;
+#endif
+        if (mTitleHooked) DropFallbackTitleHook::hook();
         mListener = ll::event::EventBus::getInstance().emplaceListener<ll::event::AfterUIRenderEvent>(
             [](ll::event::AfterUIRenderEvent& ev) { drawOverlay(ev); }
         );
     }
     void uninstall() {
         ll::event::EventBus::getInstance().removeListener(mListener);
-        DropFallbackTitleHook::unhook();
+        if (mTitleHooked) DropFallbackTitleHook::unhook();
+        mTitleHooked = false;
     }
 
 private:
     ll::event::ListenerPtr mListener;
+    bool                   mTitleHooked = false;
 };
 
 } // namespace nl::client::hud

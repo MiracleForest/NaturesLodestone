@@ -33,9 +33,11 @@ param(
     [string]$ModDir,                   # default: <repo>/bin/server/NaturesLodestone
     [int]$Slot = -1,                   # force a specific slot
     [string]$OutName,                  # output folder name under out/ (default: the scenario name)
-    [switch]$Quiet                     # do not echo server output
+    [switch]$Quiet,                    # do not echo server output
+    [ValidatePattern('^\d+\.\d+\.\d+$')][string]$LeviLamina   # LeviLamina version to run on (default: $env:NL_E2E_LEVILAMINA or 26.51.7)
 )
 $ErrorActionPreference = 'Stop'
+if ($LeviLamina) { $env:NL_E2E_LEVILAMINA = $LeviLamina }   # read by lib.ps1, install.ps1, Invoke-ModBuild and the remote host
 . "$PSScriptRoot/lib.ps1"
 $script:EchoOutput = -not $Quiet
 

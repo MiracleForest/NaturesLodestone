@@ -4,7 +4,7 @@ There are two harnesses, one per LeviLamina platform. Both run the real game bin
 
 | | Server (`tools/e2e/server`) | Client (`tools/e2e/client`) |
 |---|---|---|
-| Runs | Bedrock Dedicated Server + LeviLamina 26.51.7 (`bedrock_server_mod.exe`) | Minecraft 1.26.51 through LeviLauncher (instance `1.26.51.01`) |
+| Runs | Bedrock Dedicated Server + LeviLamina 26.51.7 (`bedrock_server_mod.exe`); `-LeviLamina` picks another version | Minecraft 1.26.51 through LeviLauncher (instance `1.26.51.01`); `-LeviLamina 26.60.6` uses instance `1.26.60.01` |
 | Mod taken from | `bin/server/NaturesLodestone` | `bin/client/NaturesLodestone` |
 | Driven by | console stdin/stdout | **headless input** through the LeviHeadlessInput mod's pipe (game in the background, your mouse/keyboard untouched; `-Foreground` = real `SendInput`) and window screenshots |
 | Parallel runs | yes: 3 slots, so 3 runs at a time (more runs wait) | opt-in game-instance slots (`-Slot` / `$env:LEVI_E2E_SLOTS`, see below); default one game (slot 1, lock shared with BEI and BeetrootSkin) |
@@ -21,7 +21,19 @@ pwsh -NoProfile -File tools/e2e/client/run.ps1 -Scenario smoke     # [-Build] [-
 pwsh -NoProfile -File tools/e2e/client/run.ps1 -Scenario full
 pwsh -NoProfile -File tools/e2e/client/run.ps1 -Scenario smoke -Foreground   # real SendInput (takes over the PC)
 pwsh -NoProfile -File tools/e2e/client/run.ps1 -Scenario smoke -Slot 2       # a clone game instance
+pwsh -NoProfile -File tools/e2e/client/run.ps1 -Scenario full -Build -LeviLamina 26.60.6   # the 26.60 line
 ```
+
+### LeviLamina line
+
+The harnesses run on LeviLamina **26.51.7** by default, because that is the line of the game
+instance they were set up with. `-LeviLamina <version>` on either `run.ps1` (or
+`$env:NL_E2E_LEVILAMINA`) selects another line for the whole run: `-Build` builds the mod for it
+(`tools/build.ps1 -LeviLamina`), the server harness installs that LeviLamina into `bds-base`
+(switching versions reinstalls it), and the client harness uses the instance
+`1.<major>.<minor>.01` (`1.26.60.01` for 26.60.6) unless `$env:NL_E2E_CLIENT_VERSION` names
+another one. The remote modes pass it on to their host. Without `-Build`, `bin/<side>` must hold a
+build of the same line: a 26.60 DLL does not load into a 26.51 game, nor the other way round.
 
 ### Headless input and parallel games
 
@@ -85,8 +97,8 @@ the server harness).
 
 ## Prerequisites
 
-- **Server:** [lip](https://github.com/LiteLDev/lip) on `PATH`. The first `run.ps1` calls `server/install.ps1`. It runs `lip install github.com/LiteLDev/LeviLamina@26.51.7` in an empty folder, which brings in BDS 1.26.51, CrashLogger, PreLoader and PeEditor, and installs everything into `%LOCALAPPDATA%\nl-e2e\bds-base`. This takes about 1–3 minutes, once per machine. `install.ps1 -Force` reinstalls. Set `$env:NL_E2E_HOME` to use a different folder.
-- **Client:** LeviLauncher at `%USERPROFILE%\Desktop\LeviLauncher.exe` (or `$env:NL_E2E_LAUNCHER`). The instance `%APPDATA%\levilauncher.exe\versions\1.26.51.01` must have been started and signed in by hand once. The screen must stay unlocked. In headless mode (the default) you can keep using the PC during a run; with `-Foreground` no one should use the mouse.
+- **Server:** [lip](https://github.com/LiteLDev/lip) on `PATH`. The first `run.ps1` calls `server/install.ps1`. It runs `lip install github.com/LiteLDev/LeviLamina@26.51.7` (or the `-LeviLamina` version) in an empty folder, which brings in the matching BDS, CrashLogger, PreLoader and PeEditor, and installs everything into `%LOCALAPPDATA%\nl-e2e\bds-base`. This takes about 1–3 minutes, once per machine. `install.ps1 -Force` reinstalls. Set `$env:NL_E2E_HOME` to use a different folder.
+- **Client:** LeviLauncher at `%USERPROFILE%\Desktop\LeviLauncher.exe` (or `$env:NL_E2E_LAUNCHER`). The instance `%APPDATA%\levilauncher.exe\versions\1.26.51.01` (or the one of the `-LeviLamina` line, e.g. `1.26.60.01`) must have been started and signed in by hand once. The screen must stay unlocked. In headless mode (the default) you can keep using the PC during a run; with `-Foreground` no one should use the mouse.
 
 ## What a run does
 

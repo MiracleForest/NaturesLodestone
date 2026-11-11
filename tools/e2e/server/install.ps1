@@ -8,6 +8,9 @@
   (github.com/LiteLDev/bds), CrashLogger, PreLoader, the runtime data, and patches
   bedrock_server.exe into bedrock_server_mod.exe.
 
+  <version> defaults to $env:NL_E2E_LEVILAMINA or 26.51.7 (see Get-E2ELeviLamina). bds-base holds
+  one version at a time: asking for another one reinstalls it.
+
   Idempotent and concurrency-safe: a run holds <home>\install.lock, installs into a temporary
   directory and renames it to bds-base only after it succeeded. bds-base\.nl-e2e-installed
   records what was installed. A second concurrent caller waits for the lock and then finds the
@@ -18,11 +21,12 @@
   pwsh tools/e2e/server/install.ps1 -Force     # reinstall
 #>
 param(
-    [string]$Version = '26.51.7',
+    [string]$Version,
     [switch]$Force
 )
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot/../common/common.ps1"
+if (-not $Version) { $Version = Get-E2ELeviLamina }
 
 $home_ = Get-E2EHome
 $base  = Join-Path $home_ 'bds-base'

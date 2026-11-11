@@ -10,7 +10,8 @@
 #
 # Each platform has its own build dir (build/<target>); outputs land in
 #   bin/<target>/NaturesLodestone/  (dll, pdb, manifest.json, lang/, behavior_packs/, resource_packs/)
-# Copy that folder to `plugins/` (BDS) or `mods/` (LeviLauncher client).
+# Copy that folder to `mods/` (BDS on LeviLamina 26.60, or the LeviLauncher client) or, on a
+# LeviLamina 26.51 server, to `plugins/`.
 param(
     [ValidateSet('server', 'client', 'all')][string]$Target = 'all',
     [ValidateSet('release', 'debug')][string]$Mode = 'release',

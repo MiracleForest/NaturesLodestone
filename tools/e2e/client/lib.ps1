@@ -12,7 +12,9 @@ $script:ClientDir    = $PSScriptRoot
 $script:ModName      = 'NaturesLodestone'
 $script:Launcher     = if ($env:NL_E2E_LAUNCHER) { $env:NL_E2E_LAUNCHER } else { Join-Path $env:USERPROFILE 'Desktop\LeviLauncher.exe' }
 $script:LauncherData = Join-Path $env:APPDATA 'levilauncher.exe'
-$script:BaseVersion  = if ($env:NL_E2E_CLIENT_VERSION) { $env:NL_E2E_CLIENT_VERSION } else { '1.26.51.01' }
+$script:BaseVersion  = if ($env:NL_E2E_CLIENT_VERSION) { $env:NL_E2E_CLIENT_VERSION } else {
+    # LeviLamina 26.51.7 -> instance 1.26.51.01
+    '1.' + ((Get-E2ELeviLamina) -replace '^(\d+\.\d+)\..*$', '$1') + '.01' }
 # Mods that stay loaded during our runs. LeviHeadlessInput (headless input, see run.ps1) is
 # installed fresh by every headless run and removed after it: never park it aside (a restored copy
 # would make a normally started game ignore the real mouse and keyboard).
