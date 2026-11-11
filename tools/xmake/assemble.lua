@@ -16,10 +16,13 @@
 
 import("core.base.json")
 
-local function mod_version()
-    local tag = try { function () return os.iorun("git describe --tags --abbrev=0 --always") end }
-    local major, minor, patch = (tag or ""):match("v(%d+)%.(%d+)%.(%d+)")
-    return tonumber(major) or 0, tonumber(minor) or 0, tonumber(patch) or 0
+-- The mod version is the "version" of manifest.json (also lip.toml's; the release workflow checks
+-- both against the tag). Packs take its major.minor.patch, without a pre-release suffix.
+local function mod_version(projectdir)
+    local version = json.loadfile(path.join(projectdir, "manifest.json")).version
+    local major, minor, patch = (version or ""):match("^(%d+)%.(%d+)%.(%d+)")
+    if not major then raise("manifest.json: version %s is not semver", tostring(version)) end
+    return version, tonumber(major), tonumber(minor), tonumber(patch)
 end
 
 local function merge_json_fragments(dir, what)
@@ -166,12 +169,12 @@ function main(target, target_type)
     os.cp(targetfile, path.join(outdir, path.filename(targetfile)))
     local pdb = path.join(path.directory(targetfile), path.basename(targetfile) .. ".pdb")
     if os.isfile(pdb) then os.cp(pdb, path.join(outdir, path.basename(targetfile) .. ".pdb")) end
-    local major, minor, patch = mod_version()
+    local modversion, major, minor, patch = mod_version(projectdir)
     local manifest = io.readfile(path.join(projectdir, "manifest.json"))
     local vars = {
         modName = "NaturesLodestone",
         modFile = path.filename(targetfile),
-        modVersion = string.format("%d.%d.%d", major, minor, patch),
+        modVersion = modversion,
         modPlatform = target_type,
     }
     manifest = manifest:gsub("%${(.-)}", function (k) return vars[k] or ("${" .. k .. "}") end)

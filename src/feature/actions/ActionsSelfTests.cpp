@@ -41,6 +41,16 @@ struct ConfigGuard {
     ~ConfigGuard() { nl::config::mut<CompassConfig>() = saved; }
 };
 
+/// Turns the world's cheats on or off. 26.60 no longer exports LevelData::setCheatsEnabled, a
+/// plain setter of the flag, so write the flag there.
+void setCheatsEnabled(LevelData& data, bool on) {
+#if NL_LL_VERSION >= 2660
+    data.mCheatsEnabled = on;
+#else
+    data.setCheatsEnabled(on);
+#endif
+}
+
 /// Restores the player's permissions, game type and the world's cheat flag when a test ends.
 struct PlayerGuard {
     Player&                player;
@@ -57,7 +67,7 @@ struct PlayerGuard {
     ~PlayerGuard() {
         setPermissions(player, permission, command);
         player.setPlayerGameType(gameType);
-        if (auto level = ll::service::getLevel()) level->getLevelData().setCheatsEnabled(cheats);
+        if (auto level = ll::service::getLevel()) setCheatsEnabled(level->getLevelData(), cheats);
     }
     static void setPermissions(Player& p, PlayerPermissionLevel level, CommandPermissionLevel command) {
         p.getAbilities().mPermissions->mPlayerPermissions  = level;
@@ -294,7 +304,7 @@ NL_REGISTER_SELFTEST("actions.permission", [](Context& ctx) -> ll::coro::CoroTas
     co_await ctx.ticks(1);
     auto level = ll::service::getLevel();
     ctx.require(level.has_value(), "level");
-    auto setCheats = [&](bool on) { level->getLevelData().setCheatsEnabled(on); };
+    auto setCheats = [&](bool on) { setCheatsEnabled(level->getLevelData(), on); };
 
     nl::config::mut<CompassConfig>().allowTeleport = true;
     PlayerGuard::makeOperator(player, true);

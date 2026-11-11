@@ -44,21 +44,30 @@ With `compassDurability` set, every successful search (outside creative) wears t
 
 ## Install
 
-You need Minecraft Bedrock Edition **1.26.51** for Windows (x64) with LeviLamina **26.51.x** (on a client, installed through [LeviLauncher](https://github.com/LiteLDev/LeviLauncher)).
+You need Minecraft Bedrock Edition for Windows (x64) with LeviLamina (on a client, installed through [LeviLauncher](https://github.com/LiteLDev/LeviLauncher)). A NaturesLodestone release is built against each LeviLamina line it supports, and you pick the one that matches your game:
 
-With [lip](https://github.com/LiteLDev/lip) 0.35.0 or later:
+| Minecraft | LeviLamina | Variant |
+| --- | --- | --- |
+| 1.26.60 | 26.60.x | `26_60`, and the default |
+| 1.26.51 | 26.51.x | `26_51` |
+
+In LeviLauncher, install NaturesLodestone from the **LeviMC Mods** page; it offers the variants above, and the default is the newest line.
+
+With [lip](https://github.com/LiteLDev/lip) 0.40.0 or later, on a dedicated server or a client (lip installs the build of the side it runs on):
 
 ```sh
-lip install github.com/MiracleForest/NaturesLodestone           # dedicated server
-lip install github.com/MiracleForest/NaturesLodestone#client    # client
+lip install github.com/MiracleForest/NaturesLodestone          # the newest line (26.60)
+lip install github.com/MiracleForest/NaturesLodestone#26_51    # LeviLamina 26.51
 ```
 
-Or download the zip from the [latest release](https://github.com/MiracleForest/NaturesLodestone/releases/latest) and extract it next to `LeviLamina/`:
+Or download the zip for your side and line from the [latest release](https://github.com/MiracleForest/NaturesLodestone/releases/latest) and extract it into a `NaturesLodestone` folder next to `LeviLamina/`, so that `NaturesLodestone/manifest.json` exists:
 
 | Where | Zip | Folder |
 | --- | --- | --- |
-| Dedicated server | `natureslodestone-server-windows-x64.zip` | `plugins/NaturesLodestone/` |
-| Client (LeviLauncher) | `natureslodestone-client-windows-x64.zip` | `mods/NaturesLodestone/` |
+| Dedicated server, LeviLamina 26.60 | `natureslodestone-server-win-x64-ll26.60.zip` | `mods/NaturesLodestone/` |
+| Dedicated server, LeviLamina 26.51 | `natureslodestone-server-win-x64-ll26.51.zip` | `plugins/NaturesLodestone/` |
+| Client (LeviLauncher), LeviLamina 26.60 | `natureslodestone-client-win-x64-ll26.60.zip` | `mods/NaturesLodestone/` |
+| Client (LeviLauncher), LeviLamina 26.51 | `natureslodestone-client-win-x64-ll26.51.zip` | `mods/NaturesLodestone/` |
 
 ## Commands
 
@@ -71,7 +80,7 @@ Or download the zip from the [latest release](https://github.com/MiracleForest/N
 
 ## Configuration
 
-Settings live in `config/*.json` inside the mod folder (`plugins/NaturesLodestone/` or `mods/NaturesLodestone/`). Each file is created with defaults on first start.
+Settings live in `config/*.json` inside the mod folder (`mods/NaturesLodestone/`, or `plugins/NaturesLodestone/` on a LeviLamina 26.51 server). Each file is created with defaults on first start.
 
 | File | Setting | Default | Meaning |
 | --- | --- | --- | --- |

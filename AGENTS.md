@@ -1,9 +1,10 @@
 # AGENTS.md
 
 NaturesLodestone is a Bedrock port of the *behaviour* of the Java mod **Nature's Compass 3.3.1** (Chaosyr),
-written as a LeviLamina native mod. It targets MC **1.26.51** / LeviLamina **26.51.7**, builds with
-xmake + clang-cl on Windows x64, and runs on **both** the dedicated server (BDS) and the client
-(local worlds through LeviLauncher). One code base, two builds (`--target_type=server|client`).
+written as a LeviLamina native mod. It targets MC **1.26.60** / LeviLamina **26.60.6** and MC **1.26.51** /
+LeviLamina **26.51.7** (one build per line: `-LeviLamina` / `--levilamina`, source guards on
+`NL_LL_VERSION` 2660 / 2651; see CONTRIBUTING.md), builds with xmake + clang-cl on Windows x64, and
+runs on **both** the dedicated server (BDS) and the client (local worlds through LeviLauncher). One code base, two builds (`--target_type=server|client`).
 
 The behaviour reference is `docs/SPEC.md`. Write it (blocks, items, mechanics, every screen, config,
 commands, strings) before the first feature unit, and read it before working on a unit.
@@ -101,7 +102,8 @@ pwsh -NoProfile -File tools/e2e/client/run.ps1 -Scenario smoke       # headless 
   `xmake build -P . ...`): without it xmake finds the main checkout's `.xmake/` and builds those sources.
 - `git config --global core.longpaths true` is required (long LeviLamina header paths).
 - `clang-cl` must be on PATH (`C:\Program Files\LLVM\bin`).
-- `xmake-requires.lock` is committed; it holds entries for both target types.
+- `locks/<line>.lock` (26_60, 26_51) are committed; each holds entries for both target types.
+  `tools/build.ps1` copies the one of the line being built to the untracked `xmake-requires.lock`.
 - In game: `/naturescompass selftest ["glob"]` (op or server console). Quote globs: `naturescompass selftest "<unit>.*"`.
   Output lines: `SELFTEST PASS <name>`, `SELFTEST FAIL <name>: <reason>`, `SELFTEST DONE pass=<N> fail=<M>`.
 - Log contract: `NaturesLodestone enabled` on enable; `NaturesLodestone world ready` when a world is available.
@@ -110,12 +112,12 @@ pwsh -NoProfile -File tools/e2e/client/run.ps1 -Scenario smoke       # headless 
   waits for them. Headless input (LeviHeadlessInput) is the default: the game runs in the
   background and never takes the real mouse/keyboard.
 
-Deploying by hand: copy `bin/server/NaturesLodestone` to `<BDS>/plugins/`, or `bin/client/NaturesLodestone` to
-`%APPDATA%\levilauncher.exe\versions\1.26.51.01\mods\`.
+Deploying by hand: copy `bin/server/NaturesLodestone` to `<BDS>/mods/` (`<BDS>/plugins/` on LeviLamina 26.51),
+or `bin/client/NaturesLodestone` to `%APPDATA%\levilauncher.exe\versions\<game version>\mods\`.
 
 ## Bedrock / LeviLamina rules (learned the hard way)
 
-- Headers: `%LOCALAPPDATA%\.xmake\packages\l\levilamina\26.51.7\<hash>\include\{ll,mc}` (one hash per
+- Headers: `%LOCALAPPDATA%\.xmake\packages\l\levilamina\<version>\<hash>\include\{ll,mc}` (one hash per
   target type). Check them before guessing a name or signature.
 - Callable: `MCAPI`, `MCFOLD`, `MCTAPI`, unmarked `virtual`. **Never** `MCNAPI`. `ll::TypedStorage`
   members are fields (`.get()`, `*`, `->`). Packets without an MCAPI constructor are created with

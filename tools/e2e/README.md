@@ -95,7 +95,7 @@ the server harness).
 2. `install.ps1` (does nothing if already installed).
 3. Takes a free slot.
 4. Syncs the slot from `bds-base` and wipes its world, logs and configs.
-5. Copies the mod to `plugins\NaturesLodestone`. LeviLamina 26.x servers load mods from `plugins\`, not `mods\`.
+5. Copies the mod into the server's mods folder (`modsPath` of `PreLoaderConfig.json`): `plugins\NaturesLodestone` on LeviLamina 26.51, `mods\NaturesLodestone` on 26.60.
 6. Writes `server.properties` for a fresh world `NL-Test`: FLAT, seed 20260521, survival, peaceful, cheats on, `texturepack-required=true`, content log on the console.
 7. Runs `scenarios/<name>.prelaunch.ps1` if it exists.
 8. Boots the server and waits for `NaturesLodestone enabled` and `Server started`.

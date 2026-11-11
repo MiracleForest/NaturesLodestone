@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for **Minecraft 1.26.60** with LeviLamina 26.60.x, on dedicated servers and in single-player; it is now the version NaturesLodestone is installed as by default. Minecraft 1.26.51 with LeviLamina 26.51.x is still supported and gets its own builds of every release.
+  - NaturesLodestone is compiled against one LeviLamina line at a time, so each release now ships one download per side and line: `natureslodestone-server-win-x64-ll26.60.zip`, `natureslodestone-client-win-x64-ll26.60.zip`, `natureslodestone-server-win-x64-ll26.51.zip` and `natureslodestone-client-win-x64-ll26.51.zip`.
+
+### Changed
+
+- The package is now described by `lip.toml` of format 4 instead of `tooth.json`, so installing it needs [lip](https://github.com/LiteLDev/lip) **0.40.0** or later, or a LeviLauncher that reads it. Older releases stay installable with older lip.
+- Each supported LeviLamina line is a variant named after it, with the server and the client build: `26_60` for 26.60.x and `26_51` for 26.51.x. The default variant (on a server and on a client) and `client`, the variant earlier releases installed the client mod as, are the newest line, so `lip update` and LeviLauncher keep working and move you to 26.60.
+  - To stay on Minecraft 1.26.51, install `github.com/MiracleForest/NaturesLodestone#26_51`, or pick the `26_51` variant on the mod's page in LeviLauncher.
+  - The config in `mods/NaturesLodestone/config/` (`plugins/NaturesLodestone/config/` on a LeviLamina 26.51 server) is kept.
+- On a LeviLamina 26.60 server the mod is installed into `mods/NaturesLodestone/`, next to LeviLamina, which 26.60 moved there from `plugins/`. On a 26.51 server it stays in `plugins/NaturesLodestone/`.
+- The downloads are now lip mod archives: the files sit at the root of the ZIP instead of inside a `NaturesLodestone/` folder. Extract one into a `NaturesLodestone` folder, not next to it.
+
 ## [0.1.1] - 2026-11-01
 
 ### Changed
