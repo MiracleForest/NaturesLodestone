@@ -1,0 +1,101 @@
+format = 4
+id = "github.com/MiracleForest/NaturesLodestone"
+version = "0.2.0-beta.1"
+
+[info]
+name = "NaturesLodestone"
+description = "A biome-finding compass for Minecraft Bedrock Edition: pick a biome and the compass leads you to it"
+tags = ["utility", "adventure", "biome", "compass"]
+logo = "https://raw.githubusercontent.com/MiracleForest/NaturesLodestone/main/docs/logo.png"
+
+# NaturesLodestone is compiled against one LeviLamina line at a time, so every supported line is a
+# variant named after it: 26_51 for LeviLamina 26.51.x (Minecraft 1.26.51), 26_60 for 26.60.x
+# (Minecraft 1.26.60). Variant names may only hold [a-z0-9_], hence 26_60 and not 26.60. Each
+# variant has a server entry (dedicated server) and a client entry (LeviLauncher).
+#
+# The default variant is the newest supported line. There is no "client" variant: lip and
+# LeviLauncher pick the server or the client entry of a variant by the side they install on.
+#
+# On a dedicated server, LeviLamina 26.60 loads mods from mods/, where the mcmod asset puts the
+# mod, but LeviLamina 26.51 loads them from plugins/, so the 26.51 server entry places the same
+# ZIP there with a zip asset.
+#
+# LeviLamina's releases are still tooth.json packages, whose client build is their "client"
+# variant, so the client entries depend on github.com/LiteLDev/LeviLamina#client.
+
+# --- 26.60 (Minecraft 1.26.60) ------------------------------------------------------------------
+
+[[variants.""]]
+side = "server"
+platform = "win-x64"
+preserve = ["mods/NaturesLodestone/config/"]
+
+[variants."".deps]
+"github.com/LiteLDev/LeviLamina" = "26.60.*"
+
+[[variants."".assets]]
+type = "mcmod"
+urls = ["https://{{id}}/releases/download/v{{version}}/natureslodestone-server-win-x64-ll26.60.zip"]
+
+[[variants.""]]
+side = "client"
+platform = "win-x64"
+preserve = ["mods/NaturesLodestone/config/"]
+
+[variants."".deps]
+"github.com/LiteLDev/LeviLamina#client" = "26.60.*"
+
+[[variants."".assets]]
+type = "mcmod"
+urls = ["https://{{id}}/releases/download/v{{version}}/natureslodestone-client-win-x64-ll26.60.zip"]
+
+[[variants."26_60"]]
+side = "server"
+platform = "win-x64"
+preserve = ["mods/NaturesLodestone/config/"]
+
+[variants."26_60".deps]
+"github.com/LiteLDev/LeviLamina" = "26.60.*"
+
+[[variants."26_60".assets]]
+type = "mcmod"
+urls = ["https://{{id}}/releases/download/v{{version}}/natureslodestone-server-win-x64-ll26.60.zip"]
+
+[[variants."26_60"]]
+side = "client"
+platform = "win-x64"
+preserve = ["mods/NaturesLodestone/config/"]
+
+[variants."26_60".deps]
+"github.com/LiteLDev/LeviLamina#client" = "26.60.*"
+
+[[variants."26_60".assets]]
+type = "mcmod"
+urls = ["https://{{id}}/releases/download/v{{version}}/natureslodestone-client-win-x64-ll26.60.zip"]
+
+# --- 26.51 (Minecraft 1.26.51) ------------------------------------------------------------------
+
+[[variants."26_51"]]
+side = "server"
+platform = "win-x64"
+preserve = ["plugins/NaturesLodestone/config/"]
+
+[variants."26_51".deps]
+"github.com/LiteLDev/LeviLamina" = "26.51.*"
+
+[[variants."26_51".assets]]
+type = "zip"
+urls = ["https://{{id}}/releases/download/v{{version}}/natureslodestone-server-win-x64-ll26.51.zip"]
+place = [{ src = "", dest = "plugins/NaturesLodestone/" }]
+
+[[variants."26_51"]]
+side = "client"
+platform = "win-x64"
+preserve = ["mods/NaturesLodestone/config/"]
+
+[variants."26_51".deps]
+"github.com/LiteLDev/LeviLamina#client" = "26.51.*"
+
+[[variants."26_51".assets]]
+type = "mcmod"
+urls = ["https://{{id}}/releases/download/v{{version}}/natureslodestone-client-win-x64-ll26.51.zip"]

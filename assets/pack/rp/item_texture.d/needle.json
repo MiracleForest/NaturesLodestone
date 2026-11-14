@@ -1,0 +1,39 @@
+{
+  "biome_compass": {
+    "textures": [
+      "textures/items/biome_compass",
+      "textures/items/biome_compass_00",
+      "textures/items/biome_compass_01",
+      "textures/items/biome_compass_02",
+      "textures/items/biome_compass_03",
+      "textures/items/biome_compass_04",
+      "textures/items/biome_compass_05",
+      "textures/items/biome_compass_06",
+      "textures/items/biome_compass_07",
+      "textures/items/biome_compass_08",
+      "textures/items/biome_compass_09",
+      "textures/items/biome_compass_10",
+      "textures/items/biome_compass_11",
+      "textures/items/biome_compass_12",
+      "textures/items/biome_compass_13",
+      "textures/items/biome_compass_14",
+      "textures/items/biome_compass_15",
+      "textures/items/biome_compass_16",
+      "textures/items/biome_compass_17",
+      "textures/items/biome_compass_18",
+      "textures/items/biome_compass_19",
+      "textures/items/biome_compass_20",
+      "textures/items/biome_compass_21",
+      "textures/items/biome_compass_22",
+      "textures/items/biome_compass_23",
+      "textures/items/biome_compass_24",
+      "textures/items/biome_compass_25",
+      "textures/items/biome_compass_26",
+      "textures/items/biome_compass_27",
+      "textures/items/biome_compass_28",
+      "textures/items/biome_compass_29",
+      "textures/items/biome_compass_30",
+      "textures/items/biome_compass_31"
+    ]
+  }
+}

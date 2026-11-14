@@ -1,0 +1,27 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "natureslodestone:repair_biome_compass"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "natureslodestone:biome_compass"
+      },
+      {
+        "item": "minecraft:compass"
+      }
+    ],
+    "unlock": [
+      {
+        "item": "natureslodestone:biome_compass"
+      }
+    ],
+    "result": {
+      "item": "natureslodestone:biome_compass"
+    }
+  }
+}
